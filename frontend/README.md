@@ -17,10 +17,8 @@ We are interested in seeing code that is clean, extensible and robust. The goal 
 
 We don't expect you to be a top-notch designer, but we want to see how you would handle some styling of this app. Do not hesitate to take inspiration from Siit or anywhere else!
 
-You **must** use Typescript. 
-
-We would really prefer if you used **React**. If you plan on using something else (e.g. Vue, styled components, ...), you'll find info on how to set it up in [Parcel's documentation](https://en.parceljs.org/recipes.html).
-
+1. You **must** use React & Typescript.
+2. Do **not** touch the Server API, you need to make it work with the existing Contract
 
 ## Sending Your Results
 
@@ -54,7 +52,7 @@ This API is accessible with a `GET` request at `/services.json` on your local se
 
 We now want to filter our users by service. Example: clicking on the Payfit service should only display two users.
 
-You can use the route `GET /users.json?service_id=xxx` by replacing with the correct `service_id` on your local server.
+Use the route `GET /users.json?service_id=xxx` by replacing with the correct `service_id` on your local server.
 
 ### Level 4: Showing price information
 
@@ -62,6 +60,10 @@ For each service, we want to see the monthly cost. Use the fields `price` on the
 
 - MONTHLY_COST = FLAT_COST + COST_PER_USER * (NB_USERS_USING_THE_SERVICE - NB_USERS_INCLUDED)
 
-### Level 5: Bonus
+### Level 5: Making things dynamic
 
-Add a searchbar in order to filter users and services.
+Add a searchbar in order to filter users and services
+
+### Level 6: Bonus
+
+Tiddy up things, extend features as you see fit - show us what you can do :)
