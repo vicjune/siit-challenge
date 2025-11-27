@@ -18,7 +18,7 @@ We are interested in seeing code that is clean, extensible and robust. The goal 
 We don't expect you to be a top-notch designer, but we want to see how you would handle some styling of this app. Do not hesitate to take inspiration from Siit or anywhere else!
 
 1. You **must** use React & Typescript.
-2. Do **not** touch the Server API, you need to make it work with the existing Contract
+2. Do **not** touch the Server API, you need to make it work with the existing Contract (unless you want to extend capabilities for Step 6)
 
 ## Sending Your Results
 
