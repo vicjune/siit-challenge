@@ -2,7 +2,7 @@ export interface UserFilters {
   service?: number;
 }
 
-export const buildUserUrl = (filters?: UserFilters) => {
+export const buildUsersUrl = (filters?: UserFilters) => {
   const params = new URLSearchParams();
   if (filters?.service) {
     params.append('service_id', String(filters.service));

@@ -23,7 +23,7 @@ export const useUrlParam = <T>(name: string) => {
         (prev) => {
           let oldValue;
           try {
-            oldValue = JSON.parse(prev.get(name) || '');
+            oldValue = JSON.parse(prev.get(name) || '{}');
           } catch (e) {
             console.error(e);
           }

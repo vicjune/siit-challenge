@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { User } from 'src/types/User';
-import { buildUserUrl, UserFilters } from 'src/utils/buildUserUrl';
-import { fetchData } from 'src/utils/fetchData';
+import { buildUsersUrl, UserFilters } from 'src/utils/buildUserUrl';
+import { fetchAndCache } from 'src/utils/fetchAndCache';
 
 export const UserList = ({
   sx,
@@ -31,7 +31,8 @@ export const UserList = ({
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const resultJson = await fetchData<User[]>(buildUserUrl(filters));
+        const response = await fetchAndCache(buildUsersUrl(filters));
+        const resultJson = (await response.json()) as User[];
         setUsers(resultJson);
       } catch (e) {
         if (e instanceof Error) {

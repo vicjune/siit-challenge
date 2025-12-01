@@ -12,6 +12,11 @@ import {
 import { useEffect, useState } from 'react';
 import { theme } from 'src/theme';
 import { Service } from 'src/types/Service';
+import { User } from 'src/types/User';
+import { buildUsersUrl } from 'src/utils/buildUserUrl';
+import { calculateServicePrice } from 'src/utils/calculatePrice';
+import { fetchAndCache } from 'src/utils/fetchAndCache';
+import { populateService, ServiceWithUsage } from 'src/utils/populateService';
 
 export const ServiceList = ({
   sx,
@@ -22,16 +27,23 @@ export const ServiceList = ({
   selectedService?: number | undefined;
   setSelectedService?: (serviceId: number | undefined) => void;
 }) => {
-  const [services, setServices] = useState<Service[] | undefined>(undefined);
+  const [services, setServices] = useState<ServiceWithUsage[] | undefined>(
+    undefined,
+  );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
   const fetchServices = async () => {
     setLoading(true);
     try {
-      const result = await fetch('/services.json');
-      const resultJson = (await result.json()) as Service[];
-      setServices(resultJson);
+      const servicesResponse = await fetchAndCache('/services.json');
+      const servicesJson = (await servicesResponse.json()) as Service[];
+      const usersResponse = await fetchAndCache(buildUsersUrl());
+      const usersJson = (await usersResponse.json()) as User[];
+
+      setServices(
+        servicesJson.map((service) => populateService(service, usersJson)),
+      );
     } catch (e) {
       if (e instanceof Error) {
         setError(e);
@@ -93,22 +105,27 @@ export const ServiceList = ({
                   : undefined,
               }}
             >
-              <Box
-                component="img"
-                src={service.logo_url}
-                sx={{ height: 50, mr: 4 }}
-              />
+              <Box sx={{ width: 100, mr: 4 }}>
+                <Box
+                  component="img"
+                  src={service.logo_url}
+                  sx={{ height: 50, maxWidth: 100 }}
+                />
+              </Box>
               <Box
                 sx={{
                   display: 'flex',
                   flexDirection: 'column',
                   alignItems: 'flex-end',
+                  width: 150,
                 }}
               >
-                <Typography variant="h6" sx={{ mr: 1 }}>
-                  {service.name}
+                <Typography variant="h6">{service.name}</Typography>
+                <Typography color="Gray">
+                  {calculateServicePrice(service)}€ /month
                 </Typography>
                 <Button
+                  sx={{ mt: 2 }}
                   startIcon={<OpenInNew />}
                   href={service.website_url}
                   target="_blank"
