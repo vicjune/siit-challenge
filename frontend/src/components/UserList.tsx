@@ -13,29 +13,36 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { User } from 'src/types/User';
+import { buildUserUrl, UserFilters } from 'src/utils/buildUserUrl';
+import { fetchData } from 'src/utils/fetchData';
 
-export const UserList = ({ sx }: { sx?: SxProps }) => {
+export const UserList = ({
+  sx,
+  filters,
+}: {
+  sx?: SxProps;
+  filters?: UserFilters;
+}) => {
   const [users, setUsers] = useState<User[] | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchUsers = async () => {
-    setLoading(true);
-    try {
-      const result = await fetch('/users.json');
-      const resultJson = (await result.json()) as User[];
-      setUsers(resultJson);
-    } catch (e) {
-      if (e instanceof Error) {
-        setError(e);
-      }
-    }
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const fetchUsers = async () => {
+      setLoading(true);
+      try {
+        const resultJson = await fetchData<User[]>(buildUserUrl(filters));
+        setUsers(resultJson);
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e);
+        }
+      }
+      setLoading(false);
+    };
+
     fetchUsers();
-  }, []);
+  }, [filters]);
 
   if (loading || error || !users?.length) {
     return (

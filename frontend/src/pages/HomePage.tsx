@@ -1,8 +1,14 @@
 import { AppBar, Container, Divider, Toolbar, Typography } from '@mui/material';
 import { ServiceList } from 'src/components/ServiceList';
 import { UserList } from 'src/components/UserList';
+import { UserFilters } from 'src/utils/buildUserUrl';
+import { useUrlParam } from 'src/utils/useUrlParam';
 
 export const HomePage = () => {
+  const [filters, setFilters] = useUrlParam<UserFilters | undefined>(
+    'user-filters',
+  );
+
   return (
     <>
       <AppBar position="static">
@@ -15,7 +21,7 @@ export const HomePage = () => {
           Employees
         </Typography>
 
-        <UserList sx={{ mb: 4 }} />
+        <UserList sx={{ mb: 4 }} filters={filters} />
 
         <Divider sx={{ mb: 4 }} />
 
@@ -23,7 +29,12 @@ export const HomePage = () => {
           Services
         </Typography>
 
-        <ServiceList />
+        <ServiceList
+          selectedService={filters?.service}
+          setSelectedService={(serviceId) => {
+            setFilters(serviceId ? { service: serviceId } : undefined);
+          }}
+        />
       </Container>
     </>
   );
