@@ -11,19 +11,21 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { theme } from 'src/theme';
-import { Service } from 'src/types/Service';
-import { User } from 'src/types/User';
-import { buildUsersUrl } from 'src/utils/buildUserUrl';
+import { Filters } from 'src/types/Filters';
 import { calculateServicePrice } from 'src/utils/calculatePrice';
-import { fetchAndCache } from 'src/utils/fetchAndCache';
+import { fetchServices } from 'src/utils/fetchServices';
+import { fetchUsers } from 'src/utils/fetchUsers';
 import { populateService, ServiceWithUsage } from 'src/utils/populateService';
+import { useDebounce } from 'src/utils/useDebounce';
 
 export const ServiceList = ({
   sx,
+  filters,
   selectedService,
   setSelectedService,
 }: {
   sx?: SxProps;
+  filters?: Filters;
   selectedService?: number | undefined;
   setSelectedService?: (serviceId: number | undefined) => void;
 }) => {
@@ -33,28 +35,28 @@ export const ServiceList = ({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<Error | null>(null);
 
-  const fetchServices = async () => {
-    setLoading(true);
-    try {
-      const servicesResponse = await fetchAndCache('/services.json');
-      const servicesJson = (await servicesResponse.json()) as Service[];
-      const usersResponse = await fetchAndCache(buildUsersUrl());
-      const usersJson = (await usersResponse.json()) as User[];
-
-      setServices(
-        servicesJson.map((service) => populateService(service, usersJson)),
-      );
-    } catch (e) {
-      if (e instanceof Error) {
-        setError(e);
-      }
-    }
-    setLoading(false);
-  };
+  const debouncedFilters = useDebounce(filters);
 
   useEffect(() => {
-    fetchServices();
-  }, []);
+    const fetch = async () => {
+      setLoading(true);
+      try {
+        const servicesJson = await fetchServices(debouncedFilters);
+        const usersJson = await fetchUsers();
+
+        setServices(
+          servicesJson.map((service) => populateService(service, usersJson)),
+        );
+      } catch (e) {
+        if (e instanceof Error) {
+          setError(e);
+        }
+      }
+      setLoading(false);
+    };
+
+    fetch();
+  }, [debouncedFilters]);
 
   if (loading || error || !services?.length) {
     return (

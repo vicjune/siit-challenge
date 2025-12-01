@@ -1,21 +1,19 @@
-import { AppBar, Container, Divider, Toolbar, Typography } from '@mui/material';
+import { Container, Divider, Typography } from '@mui/material';
+import { AppBar } from 'src/components/AppBar';
 import { ServiceList } from 'src/components/ServiceList';
 import { UserList } from 'src/components/UserList';
-import { UserFilters } from 'src/utils/buildUserUrl';
+import { Filters } from 'src/types/Filters';
+import { removeUndefinedProps } from 'src/utils/removeUndefinedProps';
 import { useUrlParam } from 'src/utils/useUrlParam';
 
 export const HomePage = () => {
-  const [filters, setFilters] = useUrlParam<UserFilters | undefined>(
+  const [filters, setFilters] = useUrlParam<Filters | undefined>(
     'user-filters',
   );
 
   return (
     <>
-      <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h5">Siit</Typography>
-        </Toolbar>
-      </AppBar>
+      <AppBar filters={filters} setFilters={setFilters} />
       <Container sx={{ py: 4 }}>
         <Typography variant="h5" sx={{ mb: 2 }}>
           Employees
@@ -30,9 +28,12 @@ export const HomePage = () => {
         </Typography>
 
         <ServiceList
+          filters={filters}
           selectedService={filters?.service}
           setSelectedService={(serviceId) => {
-            setFilters(serviceId ? { service: serviceId } : undefined);
+            setFilters((prev) =>
+              removeUndefinedProps({ ...prev, service: serviceId }),
+            );
           }}
         />
       </Container>
